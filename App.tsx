@@ -1,118 +1,188 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  Text,
+  PermissionsAndroid,
+  Platform,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+  Easing,
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
+import Voice from 'react-native-voice';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const VoiceRecognition = () => {
+  const [started, setStarted] = useState(false);
+  const [results, setResults] = useState([]);
+  const [error, setError] = useState('');
+  const [pulseAnim] = useState(new Animated.Value(1));
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  useEffect(() => {
+    Voice.onSpeechStart = onSpeechStart;
+    Voice.onSpeechEnd = onSpeechEnd;
+    Voice.onSpeechResults = onSpeechResults;
+    Voice.onSpeechError = onSpeechError;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+    return () => {
+      Voice.destroy().then(Voice.removeAllListeners);
+    };
+  }, []);
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const onSpeechStart = e => {
+    setStarted(true);
+    startPulse();
+  };
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const onSpeechEnd = e => {
+    setStarted(false);
+    stopPulse();
+  };
+
+  const onSpeechResults = e => {
+    setResults(prev => [...prev, ...e.value]);
+  };
+
+  const onSpeechError = e => {
+    setError(JSON.stringify(e.error));
+  };
+
+  const startPulse = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.5,
+          duration: 1000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  };
+
+  const stopPulse = () => {
+    pulseAnim.setValue(1);
+  };
+
+  const startRecognizing = async () => {
+    if (Platform.OS === 'android') {
+      const hasPermission = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+      );
+      if (!hasPermission) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          setError('Microphone permission denied');
+          return;
+        }
+      }
+    }
+    try {
+      await Voice.start('en-US');
+      setError('');
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  const stopRecognizing = async () => {
+    try {
+      await Voice.stop();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <View style={styles.container}>
+      <FlatList
+        data={results}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.chatContainer}
+        renderItem={({item}) => (
+          <View style={styles.messageBubble}>
+            <Text style={styles.messageText}>{item}</Text>
+          </View>
+        )}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+      {error ? <Text style={styles.errorText}>{`Error: ${error}`}</Text> : null}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={styles.inputContainer}>
+          <Animated.View style={{transform: [{scale: pulseAnim}]}}>
+            <TouchableOpacity
+              onPress={started ? stopRecognizing : startRecognizing}
+              style={styles.micButton}>
+              <Text style={styles.micIcon}>{started ? '🎤' : '🎙️'}</Text>
+            </TouchableOpacity>
+          </Animated.View>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      </KeyboardAvoidingView>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
   },
-  sectionTitle: {
+  chatContainer: {
+    padding: 15,
+  },
+  messageBubble: {
+    backgroundColor: '#6200ea',
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
+    maxWidth: '75%',
+  },
+  messageText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  inputContainer: {
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderColor: '#ddd',
+  },
+  textInput: {
+    flex: 1,
+    padding: 10,
+    fontSize: 16,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  micButton: {
+    backgroundColor: '#6200ea',
+    padding: 15,
+    borderRadius: 50,
+    elevation: 5,
+  },
+  micIcon: {
     fontSize: 24,
-    fontWeight: '600',
+    color: '#fff',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  errorText: {
+    color: '#e53935',
+    textAlign: 'center',
+    marginVertical: 10,
   },
 });
 
-export default App;
+export default VoiceRecognition;

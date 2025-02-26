@@ -1,0 +1,30 @@
+diff --git a/node_modules/react-native-voice/android/build.gradle b/node_modules/react-native-voice/android/build.gradle
+index c0484f8..dd1aca3 100644
+--- a/node_modules/react-native-voice/android/build.gradle
++++ b/node_modules/react-native-voice/android/build.gradle
+@@ -58,8 +58,8 @@ allprojects {
+ def supportVersion = rootProject.hasProperty('supportLibVersion') ? rootProject.supportLibVersion : DEFAULT_SUPPORT_LIB_VERSION
+ 
+ dependencies {
+-    compile fileTree(dir: 'libs', include: ['*.jar'])
+-    testCompile 'junit:junit:4.12'
+-    compile 'com.android.support:appcompat-v7:${supportVersion}'
+-    compile 'com.facebook.react:react-native:+'
++    implementation fileTree(dir: 'libs', include: ['*.jar'])
++    implementation 'junit:junit:4.12'
++    implementation 'com.android.support:appcompat-v7:${supportVersion}'
++    implementation 'com.facebook.react:react-native:+'
+ }
+diff --git a/node_modules/react-native-voice/android/src/main/java/com/wenkesj/voice/VoiceModule.java b/node_modules/react-native-voice/android/src/main/java/com/wenkesj/voice/VoiceModule.java
+index 40b8927..d2d701d 100644
+--- a/node_modules/react-native-voice/android/src/main/java/com/wenkesj/voice/VoiceModule.java
++++ b/node_modules/react-native-voice/android/src/main/java/com/wenkesj/voice/VoiceModule.java
+@@ -11,7 +11,7 @@ import android.speech.RecognitionListener;
+ import android.speech.RecognitionService;
+ import android.speech.RecognizerIntent;
+ import android.speech.SpeechRecognizer;
+-import android.support.annotation.NonNull;
++import androidx.annotation.NonNull;
+ import android.util.Log;
+ 
+ import com.facebook.react.bridge.Arguments;
