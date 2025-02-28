@@ -1,80 +1,109 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Voice-to-Text React Native App
 
-# Getting Started
+## Overview
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+This is a **React Native** application that converts **voice input into text** using speech recognition. The app utilizes the `@react-native-voice/voice` package to capture and transcribe speech in real-time.
 
-## Step 1: Start the Metro Server
+## Features
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+- Start and stop voice recording
+- Convert speech to text
+- Display transcribed text in real-time
+- Support for multiple languages (if applicable)
 
-To start Metro, run the following command from the _root_ of your React Native project:
+## Installation
 
-```bash
-# using npm
-npm start
+### Prerequisites
 
-# OR using Yarn
-yarn start
+Ensure you have the following installed:
+
+- Node.js (Latest LTS version recommended)
+- React Native CLI
+- Android Studio / Xcode (For running on emulator or physical device)
+
+### Clone the Repository
+
+```sh
+git clone https://github.com/sunilkumawat6268/react-native-voice-to-text.git
+cd voice-to-text-app
 ```
 
-## Step 2: Start your Application
+### Install Dependencies
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+```sh
+yarn install
+# OR
+npm install
+```
+
+## Setup
+
+### Link the Voice Package (If Required)
+
+For React Native 0.60 and above, autolinking should handle this. Otherwise, manually link it:
+
+```sh
+npx react-native link @react-native-voice/voice
+```
+
+### iOS Setup
+
+If you are using iOS, ensure you install pods:
+
+```sh
+cd ios && pod install && cd ..
+```
+
+Additionally, add the following permission in `Info.plist`:
+
+```xml
+<key>NSSpeechRecognitionUsageDescription</key>
+<string>We need access to your microphone for speech recognition.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>We need microphone access to capture your voice.</string>
+```
+
+### Android Setup
+
+Add the following permissions to `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+## Running the App
 
 ### For Android
 
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+```sh
+npx react-native run-android
 ```
 
 ### For iOS
 
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+```sh
+npx react-native run-ios
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+## Usage
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+1. Open the app.
+2. Press the **Start Recording** button to begin voice capture.
+3. Speak into the microphone.
+4. The transcribed text will appear on the screen.
+5. Press **Stop Recording** to end voice input.
 
-## Step 3: Modifying your App
+## Dependencies
 
-Now that you have successfully run the app, let's modify it.
+- `@react-native-voice/voice`
+- `react-native` (Latest version)
+- `react-native-permissions` (For handling permissions, if needed)
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+## License
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+This project is open-source and available under the **MIT License**.
 
-## Congratulations! :tada:
+---
 
-You've successfully run and modified your React Native App. :partying_face:
 
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-# react-native-voice-to-text
