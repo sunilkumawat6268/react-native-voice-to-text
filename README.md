@@ -25,7 +25,7 @@ Ensure you have the following installed:
 
 ```sh
 git clone https://github.com/sunilkumawat6268/react-native-voice-to-text.git
-cd voice-to-text-app
+cd react-native-voice-to-text
 ```
 
 ### Install Dependencies
