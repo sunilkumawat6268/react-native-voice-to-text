@@ -46,6 +46,7 @@ For React Native 0.60 and above, autolinking should handle this. Otherwise, manu
 npx react-native link @react-native-voice/voice
 ```
 
+
 ### iOS Setup
 
 If you are using iOS, ensure you install pods:
