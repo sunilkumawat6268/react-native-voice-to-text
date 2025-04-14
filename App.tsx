@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+7import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -186,3 +186,4 @@ const styles = StyleSheet.create({
 });
 
 export default VoiceRecognition;
+
