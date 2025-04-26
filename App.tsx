@@ -186,4 +186,3 @@ const styles = StyleSheet.create({
 });
 
 export default VoiceRecognition;
-
