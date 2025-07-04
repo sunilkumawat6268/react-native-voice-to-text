@@ -1,5 +1,6 @@
 # Voice-to-Text React Native App
 
+
 ## Overview
 
 This is a **React Native** application that converts **voice input into text** using speech recognition. The app utilizes the `@react-native-voice/voice` package to capture and transcribe speech in real-time.
